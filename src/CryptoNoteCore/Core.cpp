@@ -2085,6 +2085,16 @@ void Core::fillQueryBlockShortInfo(uint32_t fullOffset, uint32_t currentIndex, s
     IBlockchainCache* segment = findMainChainSegmentContainingBlock(blockIndex);
     RawBlock rawBlock = getRawBlock(segment, blockIndex);
 
+    // dirty hack: make it backward compatible with old wallets, i.e. serialize without signature
+    BlockTemplate block;
+    if (!fromBinaryArray(block, rawBlock.block)) {
+      throw std::runtime_error("Coulnd't deserialize BlockTemplate");
+    }
+    block.majorVersion = BLOCK_MAJOR_VERSION_4;
+    if (!toBinaryArray(block, rawBlock.block)) {
+      throw std::runtime_error("Coulnd't serialize BlockTemplate");
+    }
+
     BlockShortInfo blockShortInfo;
     blockShortInfo.block = std::move(rawBlock.block);
     blockShortInfo.blockId = segment->getBlockHash(blockIndex);
