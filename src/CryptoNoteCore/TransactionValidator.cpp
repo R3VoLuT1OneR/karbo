@@ -461,6 +461,8 @@ bool TransactionValidator::validateTransactionMixin()
     {
          m_validationResult.errorCode = CryptoNote::error::TransactionValidationError::INVALID_MIXIN;
          m_validationResult.errorMessage = "Transaction has wrong mixin";
+
+         return false;
     }
 
     return true;
